@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group>
+        <!-- clinician info -->
+    <item android:id="@+id/clinician_info"
+        android:title="Clinician info">
+    <menu>
+        <item android:id="@+id/clinician_name"
+            android:title="Dr. John Doe"/>
+        <item android:id="@+id/device_id"
+            android:title="Device #1"/>
+
+    </menu>
+    </item>
+
+        <item android:id="@+id/unit_map"
+              android:title="Unit Map">
+        </item>
+
+        <item android:id="@+id/unit_detail"
+              android:title="Unit Details">
+        </item>
+
+    </group>
+</menu>
