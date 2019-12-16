@@ -76,10 +76,13 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
     @Override
     public void processFinish(Object o) {
         patient_list = (List<Patient>)o;
-        SharedPreferences sharedPreferences = getSharedPreferences("all_patient", MODE_PRIVATE);
-        sharedPreferences.edit().putInt("length", patient_list.size());
-        this.model.setPatientList(patient_list);
-        populateMenu();
+        if(patient_list != null) {
+            SharedPreferences sharedPreferences = getSharedPreferences("all_patient", MODE_PRIVATE);
+            sharedPreferences.edit().putInt("length", patient_list.size());
+
+            this.model.setPatientList(patient_list);
+            populateMenu();
+        }
     }
 
     private void populateMenu() {
