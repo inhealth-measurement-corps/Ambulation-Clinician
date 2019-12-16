@@ -529,7 +529,6 @@ public class DetailObjectFragment extends Fragment implements AsyncResponse {
                 return days[Math.round(value)];
 
             } else { //month
-
                 DateFormat dateFormat = new SimpleDateFormat("MMM");
                 Date date = new Date();
                 Log.d("Month", dateFormat.format(date));

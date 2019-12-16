@@ -187,12 +187,11 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                 double speed = 0.0;
                 if(mode.equals("Unit")) {
                     GraphEntry daily_data = receive.get(0);
-                total_amb = daily_data.getNum_amb();
-                total_dist = daily_data.getDistance();
-                total_dur = daily_data.getDuration();
-                speed = daily_data.getSpeed();
+                    total_amb = daily_data.getNum_amb();
+                    total_dist = daily_data.getDistance();
+                    total_dur = daily_data.getDuration();
+                    speed = daily_data.getSpeed();
                 } else {
-
                     for (int i = 0; i < receive.size(); i++) {
                         GraphEntry daily_data = receive.get(i);
 
@@ -212,7 +211,6 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                 String month_dur = "00:00:00";
                 SimpleDateFormat df1 = new SimpleDateFormat("m:s");
                 SimpleDateFormat df2 = new SimpleDateFormat("mm:ss");
-
 
                 // time: hh:mm:ss
                 int hour = total_dur/3600;
@@ -235,15 +233,12 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                     }
                 }
 
-
-
                 DecimalFormat decimalFormat = new DecimalFormat("0.0");
 
-
-                    num_of_amb.setText(Integer.toString(total_amb));
-                    num_of_dis.setText(Integer.toString(total_dist));
-                    num_of_avg_spd.setText(decimalFormat.format(speed));
-                    num_of_dur.setText(month_dur);
+                num_of_amb.setText(Integer.toString(total_amb));
+                num_of_dis.setText(Integer.toString(total_dist));
+                num_of_avg_spd.setText(decimalFormat.format(speed));
+                num_of_dur.setText(month_dur);
 
             }
 
@@ -273,17 +268,16 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                         int duration = daily_data.getDuration();
                         total_dur += duration;
                         int num_amb = daily_data.getNum_amb();
-                        Log.d("week_num_amb", Integer.toString(num_amb));
                         total_amb += num_amb;
                     }
                     if (total_dur > 0) {
                         speed = total_dist / total_dur * 0.0113636 * 60;
                     }
                 }
-                    String week_dur = "00:00:00";
-                    SimpleDateFormat df1 = new SimpleDateFormat("m:s");
-                    SimpleDateFormat df2 = new SimpleDateFormat("mm:ss");
 
+                String week_dur = "00:00:00";
+                SimpleDateFormat df1 = new SimpleDateFormat("m:s");
+                SimpleDateFormat df2 = new SimpleDateFormat("mm:ss");
 
                 // time: hh:mm:ss
                 int hour = total_dur/3600;
@@ -306,14 +300,12 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                     }
                 }
 
-
                 DecimalFormat decimalFormat = new DecimalFormat("0.0");
 
                     num_of_amb.setText(Integer.toString(total_amb));
                     num_of_dis.setText(Integer.toString(total_dist));
                     num_of_avg_spd.setText(decimalFormat.format(speed));
                     num_of_dur.setText(week_dur);
-
 
             }
 
@@ -326,25 +318,26 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
             num_of_dur.setText("00:00:00");
 
             if (receive.size() > 0) {
-                    int total_amb = receive.size();
-                    int total_dist = 0;
-                    int total_dur = 0;
-                    double speed = 0.0;
-                    for (int i = 0; i < receive.size(); i++) {
-                        GraphEntry daily_data = receive.get(i);
+                int total_amb = receive.size();
+                int total_dist = 0;
+                int total_dur = 0;
+                double speed = 0.0;
+                for (int i = 0; i < receive.size(); i++) {
+                    GraphEntry daily_data = receive.get(i);
 
-                        int distance = daily_data.getDistance();
-                        total_dist += distance;
-                        int duration = daily_data.getDuration();
-                        total_dur += duration;
-                    }
-                    if(total_dur > 0) {
-                        speed = (total_dist/total_dur) * 0.0113636 * 60;
-                    }
+                    int distance = daily_data.getDistance();
+                    total_dist += distance;
+                    int duration = daily_data.getDuration();
+                    total_dur += duration;
+                }
 
-                    String todayTime = "00:00:00";
-                    SimpleDateFormat df1 = new SimpleDateFormat("m:s");
-                    SimpleDateFormat df2 = new SimpleDateFormat("mm:ss");
+                if(total_dur > 0) {
+                    speed = (total_dist/total_dur) * 0.0113636 * 60;
+                }
+
+                String todayTime = "00:00:00";
+                SimpleDateFormat df1 = new SimpleDateFormat("m:s");
+                SimpleDateFormat df2 = new SimpleDateFormat("mm:ss");
 
                 // time: hh:mm:ss
                 int hour = total_dur/3600;
@@ -367,13 +360,12 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                     }
                 }
 
-
                 DecimalFormat decimalFormat = new DecimalFormat("0.0");
 
-                    num_of_amb.setText(Integer.toString(total_amb));
-                    num_of_dis.setText(Integer.toString(total_dist));
-                    num_of_avg_spd.setText(decimalFormat.format(speed));
-                    num_of_dur.setText(todayTime);
+                num_of_amb.setText(Integer.toString(total_amb));
+                num_of_dis.setText(Integer.toString(total_dist));
+                num_of_avg_spd.setText(decimalFormat.format(speed));
+                num_of_dur.setText(todayTime);
             }
         }
 

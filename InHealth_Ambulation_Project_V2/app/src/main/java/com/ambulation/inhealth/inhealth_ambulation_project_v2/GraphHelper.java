@@ -5,14 +5,15 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,69 +33,135 @@ public class GraphHelper extends AsyncTask {
     protected Object doInBackground(Object[] objects) {
         try {
             String link = "";
-            if (this.type.equals("Today")) {
-                Log.d("GraphHelper", "Today");
-                link = "http://10.162.80.9:90/ambulation/test-clinician-today.php";
-            } else if (this.type.equals("Month")){
-                Log.d("GraphHelper", "Month");
-                link = "http://10.162.80.9:90/ambulation/test-clinician-month.php";
-            } else {
-                Log.d("GraphHelper", "Week");
-                link = "http://10.162.80.9:90/ambulation/test-clinician-week.php";
-            }
             // Each objects have two fields, patient_id and date
-            String patient_room = (String)(objects[0]);
-            Log.d("patient room",patient_room);
+            String patient_room = (String) (objects[0]);
+            Log.d("patient room", patient_room);
             String date = (String) objects[1];
             Log.d("date", date);
             String mode = (String) objects[2];
             Log.d("mode", mode);
-            String data = URLEncoder.encode("patient_room", "UTF-8") + "=" +
-                    URLEncoder.encode(patient_room, "UTF-8");
-            data += "&" + URLEncoder.encode("date", "UTF-8") + "=" +
-                    URLEncoder.encode(date, "UTF-8");
-            data += "&" + URLEncoder.encode("mode", "UTF-8") + "=" +
-                    URLEncoder.encode(mode, "UTF-8");
-            URL url = new URL(link);
-            URLConnection urlConnection = url.openConnection();
-            urlConnection.setDoOutput(true);
-            OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream());
-            writer.write(data);
-            writer.flush();
-            writer.close();
-            BufferedReader reader = new BufferedReader(new
-                    InputStreamReader(urlConnection.getInputStream()));
-            StringBuilder stringBuilder = new StringBuilder();
-            String line = null;
-
-            // Read Server Response
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-
-            List<GraphEntry> list = new ArrayList<>();
-            if(stringBuilder.toString() != null && !stringBuilder.toString().equals("") && !stringBuilder.toString().equals("null")) {
-                Log.d("Patient Room", patient_room);
-                Log.d("Details Values", this.type + stringBuilder.toString());
-                JSONArray jsonArray = new JSONArray(stringBuilder.toString());
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = (JSONObject) (jsonArray.get(i));
-                    GraphEntry entry = new GraphEntry(Float.parseFloat((String) (jsonObject.get("date"))), (int) (Float.parseFloat((String) (jsonObject.get("distance")))), Float.parseFloat((String) (jsonObject.get("speed"))), (int) (Float.parseFloat((String) (jsonObject.get("duration")))), (int)(Float.parseFloat((String) (jsonObject.get("num_amb")))));
-                    list.add(entry);
+            if (mode == "Patient") {
+                if (this.type.equals("Today")) {
+                    Log.d("GraphHelper", "Today");
+                    link = "http://10.0.2.2:5000/clinician/patient/today/" + patient_room;
+                } else if (this.type.equals("Month")) {
+                    Log.d("GraphHelper", "Month");
+                    link = "http://10.0.2.2:5000/clinician/patient/month/" + patient_room;
+                } else {
+                    Log.d("GraphHelper", "Week");
+                    link = "http://10.0.2.2:5000/clinician/patient/week/" + patient_room;
                 }
 
-            }
-            HashMap<String, List<GraphEntry>> map = new HashMap<>();
-            Log.d("type", this.type);
-            System.out.println(list);
-            map.put(this.type, list);
+                URL url = new URL(link);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestProperty("Content-length", "0");
+                urlConnection.setUseCaches(false);
+                urlConnection.setAllowUserInteraction(false);
+                urlConnection.setConnectTimeout(100000);
+                urlConnection.setReadTimeout(100000);
 
-            return map;
-        } catch (Exception e) {
-            System.out.print(e);
-            return null;
+                urlConnection.connect();
+
+                int responseCode = urlConnection.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader reader = new BufferedReader(new
+                            InputStreamReader(urlConnection.getInputStream()));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line = null;
+
+                    // Read Server Response
+                    while ((line = reader.readLine()) != null) {
+                        stringBuilder.append(line);
+                    }
+
+                    Log.d("All patients values: ", stringBuilder.toString());
+
+                    List<GraphEntry> list = new ArrayList<>();
+                    if (stringBuilder.toString() != null && !stringBuilder.toString().equals("") && !stringBuilder.toString().equals("null")) {
+                        Log.d("Patient Room", patient_room);
+                        Log.d("Details Values", this.type + stringBuilder.toString());
+                        JSONArray jsonArray = new JSONArray(stringBuilder.toString());
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = (JSONObject) (jsonArray.get(i));
+                            GraphEntry entry = new GraphEntry(Float.parseFloat("" + jsonObject.get("date")), (int) (Float.parseFloat("" + jsonObject.get("distance"))), Float.parseFloat("" + jsonObject.get("speed")), (int) (Float.parseFloat("" + jsonObject.get("duration"))), (int) (Float.parseFloat("" + jsonObject.get("num_amb"))));
+                            list.add(entry);
+                        }
+
+                    }
+                    HashMap<String, List<GraphEntry>> map = new HashMap<>();
+                    Log.d("type", this.type);
+                    System.out.println(list);
+                    map.put(this.type, list);
+
+                    return map;
+
+                }
+
+            } else {
+                if (this.type.equals("Month")) {
+                    Log.d("GraphHelper", "Month");
+                    link = "http://10.0.2.2:5000/clinician/unit/month";
+                } else {
+                    Log.d("GraphHelper", "Week");
+                    link = "http://10.0.2.2:5000/clinician/unit/week";
+                }
+
+                URL url = new URL(link);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestProperty("Content-length", "0");
+                urlConnection.setUseCaches(false);
+                urlConnection.setAllowUserInteraction(false);
+                urlConnection.setConnectTimeout(100000);
+                urlConnection.setReadTimeout(100000);
+
+                urlConnection.connect();
+
+                int responseCode = urlConnection.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader reader = new BufferedReader(new
+                            InputStreamReader(urlConnection.getInputStream()));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line = null;
+
+                    // Read Server Response
+                    while ((line = reader.readLine()) != null) {
+                        stringBuilder.append(line);
+                    }
+
+                    List<GraphEntry> list = new ArrayList<>();
+                    if (stringBuilder.toString() != null && !stringBuilder.toString().equals("") && !stringBuilder.toString().equals("null")) {
+                        JSONArray jsonArray = new JSONArray(stringBuilder.toString());
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = (JSONObject) (jsonArray.get(i));
+                            GraphEntry entry = new GraphEntry(Float.parseFloat("" + jsonObject.get("date")), (int) (Float.parseFloat("" + jsonObject.get("distance"))), Float.parseFloat("" + jsonObject.get("speed")), (int) (Float.parseFloat("" + jsonObject.get("duration"))), (int) (Float.parseFloat("" + jsonObject.get("num_amb"))));
+                            list.add(entry);
+                        }
+                    }
+                    HashMap<String, List<GraphEntry>> map = new HashMap<>();
+                    map.put(this.type, list);
+
+                    return map;
+
+                }
+            }
         }
+        catch (MalformedURLException ex) {
+            Log.e("GraphHelper", Log.getStackTraceString(ex));
+        }
+        catch (IOException ex) {
+            Log.e("GraphHelper", Log.getStackTraceString(ex));
+        }
+        catch (JSONException ex) {
+            Log.e("GraphHelper", Log.getStackTraceString(ex));
+        }
+
+        return null;
     }
 
     @Override
