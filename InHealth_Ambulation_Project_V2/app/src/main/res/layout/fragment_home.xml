@@ -9,10 +9,10 @@
     <fragment
         android:id="@+id/patient_map"
         android:name="com.ambulation.inhealth.inhealth_ambulation_project_v2.PatientMapFragment"
-        android:layout_width="250dp"
+        android:layout_width="160dp"
         android:layout_height="450dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,6 +22,7 @@
         android:layout_width="739dp"
         android:layout_height="399dp"
         android:layout_marginTop="16dp"
+        android:layout_marginLeft="48dp"
         app:layout_constraintStart_toEndOf="@+id/patient_map"
         app:layout_constraintTop_toTopOf="parent" />
 

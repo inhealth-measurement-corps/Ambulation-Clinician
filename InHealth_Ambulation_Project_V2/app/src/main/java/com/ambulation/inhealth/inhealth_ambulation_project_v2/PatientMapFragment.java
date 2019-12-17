@@ -1,16 +1,27 @@
 package com.ambulation.inhealth.inhealth_ambulation_project_v2;
 
+import android.app.ActionBar;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.Layout;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,41 +33,7 @@ public class PatientMapFragment extends Fragment implements View.OnClickListener
      */
     private static ArrayList<Button> room_list;
     private static HashMap<Integer, Patient> patient_list;
-    /** buttons that each represent a room *****************/
-    private static Button button1;
-    private static Button button2;
-    private static Button button3;
-    private static Button button4;
-    private static Button button5;
-    private static Button button6;
-    private static Button button7;
-    private static Button button8;
-    private static Button button9;
-    private static Button button10;
-    private static Button button11;
-    private static Button button12;
-    private static Button button14;
-    private static Button button15;
-    private static Button button16;
-    private static Button button17;
-    private static Button button18;
-    private static Button button19;
-    private static Button button20;
-    private static Button button21;
-    private static Button button22;
-    private static Button button23;
-    private static Button button24;
-    private static Button button25;
-    private static Button button26;
-    private static Button button27;
-    private static Button button28;
-    private static Button button29;
-    private static Button button30;
-    private static Button button31;
-    private static Button button32;
-    private static Button button33;
-    /*********************************************************/
-
+    private static ArrayList<HashMap<String, Integer>> coor_list = new ArrayList<>();
     private SharedViewModel model;
 
     @Nullable
@@ -65,6 +42,24 @@ public class PatientMapFragment extends Fragment implements View.OnClickListener
      View view = inflater.inflate(R.layout.patient_map_fragment, container, false);
      this.room_list = new ArrayList<>();
      this.patient_list = new HashMap<>();
+
+     // load JSON coordinates
+     try {
+         JSONObject obj = new JSONObject(loadJSONFromAsset());
+         JSONArray pos_arr = obj.getJSONArray("coordinates");
+         for(int i = 0; i < pos_arr.length(); i++) {
+             JSONObject c_object = pos_arr.getJSONObject(i);
+             HashMap<String, Integer> hm = new HashMap<>();
+             hm.put("x", c_object.getInt("x"));
+             hm.put("y", c_object.getInt("y"));
+             hm.put("width", c_object.getInt("width"));
+             hm.put("height", c_object.getInt("height"));
+             coor_list.add(hm);
+         }
+     } catch (JSONException e) {
+         e.printStackTrace();
+     }
+
      this.model = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
      initRoom(view);
      model.getPatientList().observe(this, plist -> {
@@ -77,74 +72,48 @@ public class PatientMapFragment extends Fragment implements View.OnClickListener
      return view;
     }
 
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getActivity().getAssets().open("Z10W.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
 
     public void initRoom(View view) {
-        button1 = view.findViewById(R.id.button1);
-        button2 = view.findViewById(R.id.button2);
-        button3 = view.findViewById(R.id.button3);
-        button4 =  view.findViewById(R.id.button4);
-        button5 =  view.findViewById(R.id.button5);
-        button6 =  view.findViewById(R.id.button6);
-        button7 =  view.findViewById(R.id.button7);
-        button8 =  view.findViewById(R.id.button8);
-        button9 =  view.findViewById(R.id.button9);
-        button10 =  view.findViewById(R.id.button10);
-        button11 =  view.findViewById(R.id.button11);
-        button12 =  view.findViewById(R.id.button12);
-        button14 =  view.findViewById(R.id.button14);
-        button15 =  view.findViewById(R.id.button15);
-        button16 =  view.findViewById(R.id.button16);
-        button17 =  view.findViewById(R.id.button17);
-        button18 =  view.findViewById(R.id.button18);
-        button19 =  view.findViewById(R.id.button19);
-        button20 =  view.findViewById(R.id.button20);
-        button21 =  view.findViewById(R.id.button21);
-        button22 =  view.findViewById(R.id.button22);
-        button23 =  view.findViewById(R.id.button23);
-        button24 =  view.findViewById(R.id.button24);
-        button25 =  view.findViewById(R.id.button25);
-        button26 =  view.findViewById(R.id.button26);
-        button27 =  view.findViewById(R.id.button27);
-        button28 =  view.findViewById(R.id.button28);
-        button29 =  view.findViewById(R.id.button29);
-        button30 =  view.findViewById(R.id.button30);
-        button31 = view.findViewById(R.id.button31);
-        button32 = view.findViewById(R.id.button32);
-        button33 = view.findViewById(R.id.button33);
 
+        int[] Id_list = {R.id.button1, R.id.button2, R.id.button3,
+        R.id.button4, R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9, R.id.button10,
+                R.id.button11, R.id.button12, R.id.button14, R.id.button15, R.id.button16, R.id.button17, R.id.button18,
+                R.id.button19, R.id.button20, R.id.button21, R.id.button22, R.id.button23, R.id.button24, R.id.button25,
+                R.id.button26, R.id.button27, R.id.button28, R.id.button29, R.id.button30, R.id.button31, R.id.button32, R.id.button33};
 
-        room_list.add(button1);
-        room_list.add(button2);
-        room_list.add(button3);
-        room_list.add(button4);
-        room_list.add(button5);
-        room_list.add(button6);
-        room_list.add(button7);
-        room_list.add(button8);
-        room_list.add(button9);
-        room_list.add(button10);
-        room_list.add(button11);
-        room_list.add(button12);
-        room_list.add(button14);
-        room_list.add(button15);
-        room_list.add(button16);
-        room_list.add(button17);
-        room_list.add(button18);
-        room_list.add(button19);
-        room_list.add(button20);
-        room_list.add(button21);
-        room_list.add(button22);
-        room_list.add(button23);
-        room_list.add(button24);
-        room_list.add(button25);
-        room_list.add(button26);
-        room_list.add(button27);
-        room_list.add(button28);
-        room_list.add(button29);
-        room_list.add(button30);
-        room_list.add(button31);
-        room_list.add(button32);
-        room_list.add(button33);
+        for(int i = 0; i < Id_list.length; i++) {
+            Button button = view.findViewById(Id_list[i]);
+            FrameLayout.LayoutParams btn_layout = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT
+            );
+            Resources r = this.getContext().getResources();
+            HashMap<String, Integer> hm = coor_list.get(i);
+            int lm = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, hm.get("x"), r.getDisplayMetrics());
+            btn_layout.leftMargin = lm;
+            int tm = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, hm.get("y"), r.getDisplayMetrics());
+            btn_layout.topMargin = tm;
+            int w = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, hm.get("width"), r.getDisplayMetrics());
+            btn_layout.width = w;
+            int h = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, hm.get("height"), r.getDisplayMetrics());
+            btn_layout.height = h;
+            button.setLayoutParams(btn_layout);
+            room_list.add(button);
+        }
 
         setTag();
     }
