@@ -103,7 +103,7 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
 
         double daily_speed = 0.0;
         if (daily_duration > 0) {
-            daily_speed = daily_distance / daily_duration * 0.0113636 * 60;
+            daily_speed = (double) daily_distance / daily_duration * 0.0113636 * 60;
         }
         daily_amb /= patient_list.size();
         daily_distance /= patient_list.size();
@@ -204,7 +204,7 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                         total_amb += num_amb;
                     }
                     if (total_dur > 0) {
-                        speed = total_dist / total_dur * 0.0113636 * 60;
+                        speed = (double) total_dist / total_dur * 0.0113636 * 60;
                     }
                 }
 
@@ -271,7 +271,7 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                         total_amb += num_amb;
                     }
                     if (total_dur > 0) {
-                        speed = total_dist / total_dur * 0.0113636 * 60;
+                        speed = (double) total_dist / total_dur * 0.0113636 * 60;
                     }
                 }
 
@@ -332,7 +332,7 @@ public class PatientInfoFragment extends Fragment implements View.OnClickListene
                 }
 
                 if(total_dur > 0) {
-                    speed = (total_dist/total_dur) * 0.0113636 * 60;
+                    speed = ((double) total_dist/total_dur) * 0.0113636 * 60;
                 }
 
                 String todayTime = "00:00:00";
